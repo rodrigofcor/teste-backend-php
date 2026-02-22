@@ -24,9 +24,36 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 5);
+        $search = $request->get('q');
 
-        $produtos = DB::table('produto_insercao')->paginate($perPage);
+        $query = DB::table('produto_insercao as p');
 
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('p.name', 'like', "%{$search}%")
+                ->orWhere('p.category', 'like', "%{$search}%")
+                ->orWhere('p.subcategory', 'like', "%{$search}%")
+                ->orWhere('p.description', 'like', "%{$search}%")
+                ->orWhere('p.manufacturer', 'like', "%{$search}%")
+                ->orWhere('p.model', 'like', "%{$search}%")
+                ->orWhere('p.color', 'like', "%{$search}%")
+
+                ->orWhereExists(function ($sub) use ($search) {
+                    $sub->select(DB::raw(1))
+                        ->from('preco_insercao as pr')
+                        ->whereColumn('pr.produto_insercao_id', 'p.id')
+                        ->where(function ($q2) use ($search) {
+                            $q2->where('pr.seller_name', 'like', "%{$search}%")
+                                ->orWhere('pr.origin', 'like', "%{$search}%")
+                                ->orWhere('pr.client_type', 'like', "%{$search}%")
+                                ->orWhere('pr.observation', 'like', "%{$search}%");
+                        });
+                });
+            });
+        }
+
+        $produtos = $query->paginate($perPage);
+        
         $produtos->getCollection()->transform(function ($produto) {
             $prices = DB::table('preco_insercao')
                 ->where('produto_insercao_id', $produto->id)

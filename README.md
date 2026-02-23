@@ -116,4 +116,79 @@ A paginação deve aceitar parâmetros de controle via query string.
 
 ## Como executar o projeto?
 
-{Esta seção deve ser preenchida pelo candidato com as instruções necessárias para execução da aplicação.}
+### Primeira vez rodando
+
+**1) Crie o arquivo `.env` a partir do `.env.example`**
+```bash
+cp .env.example .env
+```
+
+**2) Inicie o ambiente Docker**
+```bash
+docker compose up -d
+```
+
+**3) Entre no container da aplicação**
+```bash
+docker exec -it test_backend_app bash
+```
+
+**4) Dentro do container, execute as migrations e o script base**
+```bash
+composer install
+php artisan key:generate
+php artisan migrate
+sqlite3 database/database.sqlite < base_scripts.sql
+```
+Agora pode sair do container para utilizar
+
+---
+
+### Nas próximas vezes rodando basta executar
+```bash
+docker compose up -d
+```
+
+### Sincronizando os produtos
+Utilize um aplicativo de requisições (como Postman ou Insomnia) ou o curl para realizar uma requisição `POST` na rota abaixo:
+```
+POST http://127.0.0.1:8000/api/sincronizar/produtos
+```
+
+Exemplo com curl:
+```bash
+curl -X POST http://127.0.0.1:8000/api/sincronizar/produtos
+```
+### Sincronizando os preços
+Utilize um aplicativo de requisições (como Postman ou Insomnia) ou o curl para realizar uma requisição `POST` na rota abaixo:
+```
+POST http://127.0.0.1:8000/api/sincronizar/precos
+```
+
+Exemplo com curl:
+```bash
+curl -X POST http://127.0.0.1:8000/api/sincronizar/precos
+```
+
+### Consultando produtos e preços
+
+Utilize um aplicativo de requisições ou o próprio navegador para acessar:
+```
+GET http://127.0.0.1:8000/api/produtos-precos
+```
+
+**Paginação** — acrescente `?page=` com o número da página desejada:
+```
+http://127.0.0.1:8000/api/produtos-precos?page=2
+```
+
+**Filtro por texto** — acrescente `?q=` com o texto desejado:
+```
+http://127.0.0.1:8000/api/produtos-precos?q=teclado
+```
+
+**Combinando filtro e paginação:**
+```
+http://127.0.0.1:8000/api/produtos-precos?q=teclado&page=2
+```
+

@@ -7,4 +7,3 @@ Route::post('/sincronizar/produtos', [ProductController::class, 'sync']);
 Route::post('/sincronizar/precos', [ProductController::class, 'syncPrices']);
 
 Route::get('produtos-precos', [ProductController::class, 'index']);
-

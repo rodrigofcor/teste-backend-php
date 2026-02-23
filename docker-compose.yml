@@ -1,0 +1,30 @@
+services:
+  test_backend_app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+      args:
+        UID: 1000 # alinhar id host com id container para evitar problemas de permissão
+        GID: 1000 # alinhar group id host com group id container para evitar problemas de permissão
+    container_name: test_backend_app
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - test_backend_network
+
+  webserver:
+    image: nginx:1.26-alpine
+    container_name: test_backend_nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    depends_on:
+      - test_backend_app
+    networks:
+      - test_backend_network
+
+networks:
+  test_backend_network:

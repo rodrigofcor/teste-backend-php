@@ -191,4 +191,9 @@ http://127.0.0.1:8000/api/produtos-precos?q=teclado
 ```
 http://127.0.0.1:8000/api/produtos-precos?q=teclado&page=2
 ```
+### Testes automatizados
 
+Dentro do container da aplicação, execute:
+```bash
+php artisan test
+```
